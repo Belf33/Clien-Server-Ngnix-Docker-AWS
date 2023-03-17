@@ -1,0 +1,27 @@
+sudo: required
+services:
+ - docker
+
+before_install:
+  - docker build -t belf33/docker-react -f ./client/Dockerfile.dev ./client
+
+script: 
+  - docker run -e CI=true belf33/docker-react npm run test
+
+after_success:
+  - docker build -t belf33/multi-client ./client
+  - docker build -t belf33/multi-nginx ./nginx
+  - docker build -t belf33/multi-server ./server
+  - docker build -t belf33/multi-worker ./worker
+
+# deploy:
+#   provider: elasticbeanstalk
+#   region: "eu-north-1"
+#   app: "docker-react"
+#   env: "Dockerreact-env"
+#   bucket_name: "elasticbeanstalk-eu-north-1-960766624204"
+#   bucket_path: "docker-react"
+#   on:
+#     branch: master
+#   access_key_id: $KEY_ONE
+#   secret_access_key: $lflflf  
